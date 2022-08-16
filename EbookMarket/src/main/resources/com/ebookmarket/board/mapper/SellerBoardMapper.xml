@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ebookmarket.board.mapper.SellerBoardMapper">
+
+	<!-- 게시글 목록 페이지 -->
+	<select id="sellerBoardList"
+		resultType="com.ebookmarket.board.domain.SellerBoard"
+		parameterType="com.ebookmarket.common.domain.SearchCriteria">
+
+		SELECT
+		s_num,
+		sb_num,
+		sb_writer,
+		sb_reg_date,
+		sb_title,
+		sb_content,
+		sb_processing
+
+		FROM(
+		SELECT s_num,
+		sb_num,
+		sb_writer,
+		sb_reg_date,
+		sb_title,
+		sb_content,
+		sb_processing,
+		ROW_NUMBER() OVER(ORDER BY sb_NUM DESC) AS
+		RNUM
+		FROM seller_board_tbl
+		WHERE 1=1
+		<include refid="search"></include>
+		)seller
+
+		WHERE RNUM BETWEEN #{rowStart} AND #{rowEnd}
+		ORDER BY
+		sb_reg_date DESC
+
+	</select>
+	<!-- 게시글 등록처리 -->
+	<insert id="create">
+		INSERT INTO seller_board_tbl
+		(
+		s_num,
+		sb_num,
+		sb_writer,
+		sb_title,
+		sb_content,
+		sb_processing,
+		sb_attachment_url,
+		sb_reg_date
+		)
+		VALUES
+		(
+		#{s_num},
+		seller_board_seq.NEXTVAL,
+		#{sb_writer},
+		#{sb_title},
+		#{sb_content},
+		10,
+		#{sb_attachmentFileUrl},
+		sysdate
+		)
+	</insert>
+	<!-- 게시글 상세보기 -->
+	<select id="read"
+		resultType="com.ebookmarket.board.domain.SellerBoard">
+		SELECT
+		s_num,
+		sb_num,
+		sb_writer,
+		sb_title,
+		sb_content,
+		sb_processing,
+		sb_attachment_url,
+		sb_reg_date
+		FROM seller_board_tbl
+		WHERE
+		sb_num =
+		#{sb_num}
+	</select>
+
+	<!-- 이미지 미리보기 -->
+	<select id="getPicture" resultType="String">
+		SELECT sb_attachment_Url
+		FROM
+		seller_board_tbl
+		WHERE sb_num = #{sb_num}
+	</select>
+
+	<!-- 게시글 수정 처리 -->
+	<update id="update">
+		UPDATE seller_board_tbl
+		SET sb_title =#{sb_title},
+		sb_content =#{sb_content},
+		sb_attachment_Url =#{sb_attachmentFileUrl}
+		WHERE sb_num = #{sb_num}
+	</update>
+
+	<!-- 게시글 삭제처리 -->
+	<delete id="delete">
+		DELETE FROM seller_board_tbl
+		WHERE sb_num = #{sb_num}
+	</delete>
+
+	<!-- 게시물 카운트 -->
+	<select id="listCount" resultType="int"
+		parameterType="com.ebookmarket.common.domain.SearchCriteria">
+		SELECT COUNT(sb_num)
+		FROM seller_board_tbl
+		WHERE 1=1
+		<include refid="search"></include>
+		AND sb_num > 0
+	</select>
+
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">AND sb_TITLE LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'c'.toString()">AND sb_CONTENT LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'sn'.toString()">AND sb_num LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'tc'.toString()">AND (sb_TITLE LIKE '%' || #{keyword} || '%') or
+				(sb_CONTENT LIKE '%' || #{keyword} || '%')</if>
+		</if>
+	</sql>
+</mapper>

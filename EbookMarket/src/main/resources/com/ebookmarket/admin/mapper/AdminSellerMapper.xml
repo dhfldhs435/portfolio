@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ebookmarket.admin.mapper.AdminSellerMapper">
+	<select id="list"
+		resultType="com.ebookmarket.client.domain.Seller">
+		SELECT s_num,
+		s_id,
+		s_pw,
+		s_nickname,
+		s_profile_imgurl,
+		s_name,
+		s_resident_num,
+		s_email,
+		s_phone,
+		s_join_date,
+		s_seller_agree,
+		s_content_agree,
+		s_privaty_agree,
+		s_address,
+		s_bank_name,
+		s_account_num,
+		s_ah_name,
+		s_certificate_detail,
+		s_certificate_dataurl,
+		s_career_detail,
+		s_career_dataurl,
+		s_grade
+		s_answer
+		FROM seller_tbl
+		WHERE s_num > 0
+		ORDER BY
+		s_num DESC
+	</select>
+</mapper>

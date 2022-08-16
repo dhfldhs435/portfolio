@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ebookmarket.client.mapper.MemberMapper">
+	<!-- 사용자 정의 resultMap 요소 정의 -->
+	<resultMap type="com.ebookmarket.client.domain.Member"
+		id="memberMap">
+		<result property="m_num" column="m_num" />
+		<result property="m_id" column="m_id" />
+		<result property="m_pw" column="m_pw" />
+		<result property="m_name" column="m_name" />
+		<result property="m_resident_num" column="m_resident_num" />
+		<result property="m_mail" column="m_mail" />
+		<result property="m_join_date" column="m_join_date" />
+		<result property="m_answer" column="m_answer" />
+		<result property="m_content_agree" column="m_content_agree" />
+		<result property="m_privaty_agree" column="m_privaty_agree" />
+		<result property="m_refund_agree" column="m_refund_agree" />
+		<collection property="authList" resultMap="authMap">
+		</collection>
+	</resultMap>
+	<resultMap type="com.ebookmarket.client.domain.MemberAuth"
+		id="authMap">
+		<result property="m_num" column="m_num" />
+		<result property="auth" column="auth" />
+	</resultMap>
+
+	<!-- 일반회원 아이디로 회원정보 조회 -->
+	<select id="readByUserId" resultMap="memberMap">
+		SELECT mem.m_num,
+		mem.m_id,
+		m_pw,
+		m_name,
+		m_mail,
+		m_resident_num,
+		m_join_date,
+		m_answer,
+		m_content_agree,
+		m_privaty_agree,
+		m_refund_agree,
+		auth
+		FROM member_tbl mem
+		LEFT OUTER JOIN
+		member_auth auth ON
+		mem.m_num = auth.m_num
+		WHERE
+		mem.m_id=#{m_id}
+
+
+	</select>
+
+	<!-- 일반회원 이메일로 회원정보 조회 -->
+	<select id="readByUserEmail" resultMap="memberMap">
+		SELECT mem.m_num,
+		mem.m_id,
+		m_pw,
+		m_name,
+		m_mail,
+		m_resident_num,
+		m_join_date,
+		m_answer,
+		m_content_agree,
+		m_privaty_agree,
+		m_refund_agree,
+		auth
+		FROM member_tbl mem
+		LEFT OUTER JOIN
+		member_auth auth ON
+		mem.m_num = auth.m_num
+		WHERE
+		mem.m_mail=#{m_mail}
+
+
+	</select>
+
+	<!-- 일반회원 이메일과 아이디로 회원정보 조회 -->
+	<select id="readByUserIE" resultMap="memberMap">
+		SELECT mem.m_num,
+		mem.m_id,
+		m_pw,
+		m_name,
+		m_mail,
+		m_resident_num,
+		m_join_date,
+		m_answer,
+		m_content_agree,
+		m_privaty_agree,
+		m_refund_agree,
+		auth
+		FROM member_tbl mem
+		LEFT OUTER JOIN
+		member_auth auth ON
+		mem.m_num = auth.m_num
+		WHERE
+		mem.m_mail=#{email} and mem.m_id=#{id}
+
+
+	</select>
+
+	<!-- 일반회원 번호로 회원정보 조회 -->
+	<select id="readByUserNum" resultMap="memberMap">
+		SELECT mem.m_num,
+		mem.m_id,
+		m_pw,
+		m_name,
+		m_mail,
+		m_resident_num,
+		m_join_date,
+		m_content_agree,
+		m_privaty_agree,
+		m_refund_agree,
+		auth
+
+		FROM member_tbl mem
+		LEFT OUTER JOIN
+		member_auth auth ON
+		mem.m_num =
+		auth.m_num
+
+		WHERE
+		mem.m_num=#{m_num}
+
+
+	</select>
+
+	<!-- 등록 처리 -->
+	<insert id="create">
+		INSERT INTO member_tbl
+		(
+		m_num,
+		m_id,
+		m_pw,
+		m_name,
+		m_mail,
+		m_resident_num,
+		m_join_date,
+		m_answer,
+		m_content_agree,
+		m_privaty_agree,
+		m_refund_agree
+
+		)
+		VALUES
+		(
+		member_seq.NEXTVAL,
+		#{m_id},
+		#{m_pw},
+		#{m_name},
+		#{m_mail},
+		#{m_resident_num},
+		sysdate,
+		#{m_answer},
+		'y',
+		'y',
+		'y'
+
+
+		)
+	</insert>
+
+	<!-- 권한 생성 -->
+	<insert id="createAuth">
+		INSERT INTO member_auth
+		(
+		m_num,
+		auth
+		)
+		VALUES
+		(
+		member_seq.CURRVAL,
+		#{auth}
+		)
+	</insert>
+
+	<!-- 아이디 중복확인 -->
+	<select id="overlappedID" parameterType="String"
+		resultType="int">
+		SELECT count(m_id)
+		FROM member_tbl
+		WHERE m_id=#{id}
+	</select>
+
+	<select id="overlappedEmail" parameterType="String"
+		resultType="int">
+		select count(m_mail)
+		from member_tbl
+		where m_mail =
+		#{email}
+	</select>
+
+	<update id="replacePw">
+		update member_tbl
+		set m_pw = #{newEncodedPw}
+		where m_id
+		= #{id}
+	</update>
+
+	<!-- 계정정보 수정 처리 -->
+	<update id="update">
+
+		update member_tbl
+
+		set
+		m_pw = #{m_pw},
+		m_mail =
+		#{m_mail}
+
+		where m_num = #{m_num}
+
+	</update>
+
+
+
+	<!-- 게시물 카운트 -->
+	<select id="listCount" resultType="int"
+		parameterType="com.ebookmarket.common.domain.SearchCriteria">
+		SELECT COUNT(e_num)
+		FROM ebook_tbl
+		WHERE 1=1
+		<include refid="search"></include>
+		AND e_num > 0
+	</select>
+
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">AND e_TITLE LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'w'.toString()">AND e_writer LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'en'.toString()">AND e_num LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'tw'.toString()">AND (e_TITLE LIKE '%' || #{keyword} || '%') or (e_writer
+				LIKE '%' || #{keyword} || '%')</if>
+		</if>
+	</sql>
+
+
+</mapper>

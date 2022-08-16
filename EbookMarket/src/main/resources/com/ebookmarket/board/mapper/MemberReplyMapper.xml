@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ebookmarket.board.mapper.MemberReplyMapper">
+
+
+	<!-- 댓글 전체 조회(해당 게시물번호에 대해) -->
+	<select id="replyList"
+		parameterType="com.ebookmarket.board.domain.MemberReply"
+		resultType="com.ebookmarket.board.domain.MemberReply">
+		SELECT
+		mr_num,
+		mb_num,
+		mr_title,
+		mr_content,
+		mr_pw,
+		to_char(mr_reg_date,'YYYY-MM-DD HH24:MI')
+		as mr_reg_date
+		FROM
+		member_reply_tbl
+		WHERE mb_num = #{mb_num}
+		ORDER BY
+		mr_reg_date desc
+	</select>
+
+	<!-- 댓글 등록 -->
+	<insert id="replyInsert"
+		parameterType="com.ebookmarket.board.domain.MemberReply">
+		/* Reply - replyInsert */
+		<selectKey keyProperty="mr_num" resultType="int"
+			order="BEFORE">
+			select member_reply_seq.nextval from dual
+		</selectKey>
+		INSERT INTO member_reply_tbl
+		(mr_num, mb_num, mr_title, mr_content,
+		mr_pw)
+		VALUES
+		(#{mr_num}, #{mb_num}, #{mr_title}, #{mr_content},
+		#{mr_pw})
+	</insert>
+
+	<select id="pwdConfirm"
+		parameterType="com.ebookmarket.board.domain.MemberReply"
+		resultType="int">
+		/*
+		Reply - pwdConfirm */
+		SELECT NVL((
+		SELECT 1 FROM
+		member_reply_tbl
+		WHERE mr_num
+		= #{mr_num} AND mr_pw = #{mr_pw}
+		), 0) as
+		state
+		FROM dual
+	</select>
+
+	<!-- 댓글 수정 -->
+	<update id="replyUpdate"
+		parameterType="com.ebookmarket.board.domain.MemberReply">
+		/* Reply - replyUpdate */
+		UPDATE member_reply_tbl
+		SET
+		mr_content = #{mr_content},
+		mr_reg_date =
+		sysdate
+		WHERE
+		mr_num = #{mr_num}
+	</update>
+
+	<!-- 댓글 삭제 -->
+	<delete id="replyDelete"
+		parameterType="com.ebookmarket.board.domain.MemberReply">
+		/* Reply - replyDelete */
+		DELETE FROM member_reply_tbl
+		WHERE mr_num = #{mr_num}
+	</delete>
+
+	<!-- 댓글 삭제 (게시글 번호로 댓글 전체 삭제) -->
+	<delete id="replyChoiceDelete"
+		parameterType="com.ebookmarket.board.domain.MemberReply">
+		/* Reply -
+		replyChoiceDelete */
+		DELETE FROM
+		member_reply_tbl WHERE mb_num =
+		#{mb_num}
+	</delete>
+
+</mapper>

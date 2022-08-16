@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ebookmarket.board.mapper.SellerNoticeMapper">
+	<!-- 공지사항 목록 조회 -->
+	<select id="sellerNoticeList"
+		resultType="com.ebookmarket.board.domain.SellerNotice"
+		parameterType="com.ebookmarket.common.domain.SearchCriteria">
+
+		SELECT sn_num,
+		sn_title,
+		sn_content,
+		sn_writer,
+		sn_reg_date
+		FROM(
+		SELECT
+		sn_num,
+		sn_title,
+		sn_content,
+		sn_writer,
+		sn_reg_date,
+
+		ROW_NUMBER() OVER(ORDER BY
+		SN_NUM DESC) AS RNUM
+		FROM seller_notice_tbl
+		WHERE 1=1
+
+		<include refid="search"></include>
+		) no
+
+		WHERE RNUM BETWEEN #{rowStart} AND #{rowEnd}
+		ORDER BY SN_NUM DESC
+	</select>
+	<!-- 상세조회 -->
+	<select id="sellerNoticeRead"
+		resultType="com.ebookmarket.board.domain.SellerNotice">
+		SELECT sn_num,
+		sn_title,
+		sn_content,
+		sn_writer,
+		sn_reg_date,
+		sn_attachment_url
+		FROM seller_notice_tbl
+		WHERE sn_num = #{sn_num}
+	</select>
+
+	<!-- 이미지 미리보기 -->
+	<select id="getPicture" resultType="String">
+		SELECT sn_attachment_Url
+		FROM
+		seller_notice_tbl
+		WHERE sn_num = #{sn_num}
+	</select>
+
+	<!-- 게시물 카운트 -->
+	<select id="listCount" resultType="int"
+		parameterType="com.ebookmarket.common.domain.SearchCriteria">
+		SELECT COUNT(sn_num)
+		FROM seller_notice_tbl
+		WHERE 1=1
+		<include refid="search"></include>
+		AND sn_num > 0
+	</select>
+
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">AND sn_TITLE LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'c'.toString()">AND sn_CONTENT LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'sn'.toString()">AND sn_num LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'tc'.toString()">AND (sn_TITLE LIKE '%' || #{keyword} || '%') or
+				(sn_CONTENT LIKE '%' || #{keyword} || '%')</if>
+		</if>
+	</sql>
+
+
+
+</mapper>

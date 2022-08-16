@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ebookmarket.client.mapper.EbookMapper">
+
+
+	<!-- 등록 처리 -->
+	<insert id="create"> insert into ebook_tbl
+		(
+		e_num,
+		s_num,
+		e_title,
+		e_post_introduce,
+		e_writer,
+		e_profile,
+		e_age_limit,
+		e_category,
+		e_table_content,
+		e_coverimage_url,
+		e_attachment_url,
+		e_attachment_type,
+		e_thumbnail_url,
+		e_price
+		)
+		values
+		(
+		ebook_seq.nextval,
+		#{s_num},
+		#{e_title},
+		#{e_post_introduce},
+		#{e_writer},
+		#{e_profile},
+		#{e_age_limit},
+		#{e_category},
+		#{e_table_content},
+		#{e_coverimage_url},
+		#{e_attachment_url},
+		#{e_attachment_type},
+		#{e_thumbnail_url},
+		#{e_price}
+		)
+	</insert>
+
+	<!-- 게시물 리스트 출력 -->
+	<select id="ebookList"
+		resultType="com.ebookmarket.client.domain.Ebook"
+		parameterType="com.ebookmarket.common.domain.SearchCriteria">
+
+		SELECT e_num,
+		e_title,
+		e_reg_date,
+		e_writer,
+		e_price,
+		e_rating,
+		e_rating_cnt,
+		e_category
+
+		FROM (
+		SELECT e_num,
+		e_title,
+		e_reg_date,
+		e_writer,
+		e_price,
+		e_rating,
+		e_rating_cnt,
+		(select category_name from
+		category where
+		category_code = e_category) e_category,
+		ROW_NUMBER()
+		OVER(ORDER BY
+		e_num DESC) AS
+		RNUM
+		FROM
+		ebook_tbl
+		WHERE 1=1
+		and e_status
+		='regapproval'
+		<include refid="ebooksearch"></include>
+		) no
+
+		WHERE RNUM BETWEEN #{rowStart} AND #{rowEnd}
+		ORDER BY e_num desc
+	</select>
+
+	<!-- 인기순위 리스트 출력 -->
+	<select id="bestSellerlist"
+		resultType="com.ebookmarket.client.domain.Ebook"
+		parameterType="com.ebookmarket.common.domain.SearchCriteria">
+
+		SELECT
+		e_num,
+		e_title,
+		e_reg_date,
+		e_writer,
+		e_price,
+		e_rating,
+		e_rating_cnt,
+		e_category
+
+		FROM (
+		SELECT e_num,
+		e_title,
+		e_reg_date,
+		e_writer,
+		e_price,
+		e_rating,
+		e_rating_cnt,
+		(select
+		category_name
+		from
+		category where
+		category_code = e_category)
+		e_category,
+		ROW_NUMBER()
+		OVER(ORDER BY e_num
+		DESC) AS
+		RNUM
+		FROM
+		ebook_tbl
+		WHERE 1=1
+		and e_status
+		='regapproval'
+		<include refid="ebooksearch"></include>
+		) no
+
+		WHERE RNUM BETWEEN #{rowStart} AND #{rowEnd}
+
+		order by e_rating desc
+
+	</select>
+
+
+
+	<!-- 시 카테고리 정렬 -->
+	<select id="poetry"
+		resultType="com.ebookmarket.client.domain.Ebook"
+		parameterType="com.ebookmarket.common.domain.SearchCriteria">
+
+		SELECT e_num,
+		e_title,
+		e_reg_date,
+		e_writer,
+		e_price,
+		e_rating,
+		e_rating_cnt,
+		e_category
+
+		FROM (
+		SELECT e_num,
+		e_title,
+		e_reg_date,
+		e_writer,
+		e_price,
+		e_rating,
+		e_rating_cnt,
+		(select category_name from
+		category where
+		category_code = e_category) e_category,
+		ROW_NUMBER()
+		OVER(ORDER BY
+		e_num DESC) AS
+		RNUM
+		FROM
+		ebook_tbl
+		WHERE 1=1
+		and e_category=
+		'p' AND
+		e_status
+		='regapproval'
+		<include refid="ebooksearch"></include>
+		) no
+
+		WHERE RNUM BETWEEN #{rowStart} AND #{rowEnd}
+		ORDER BY e_num desc
+
+
+	</select>
+
+	<!-- 에세이 카테고리 정렬 -->
+	<select id="essay"
+		resultType="com.ebookmarket.client.domain.Ebook"
+		parameterType="com.ebookmarket.common.domain.SearchCriteria">
+
+		SELECT e_num,
+		e_title,
+		e_reg_date,
+		e_writer,
+		e_price,
+		e_rating,
+		e_rating_cnt,
+		e_category
+
+		FROM (
+		SELECT e_num,
+		e_title,
+		e_reg_date,
+		e_writer,
+		e_price,
+		e_rating,
+		e_rating_cnt,
+		(select category_name from
+		category where
+		category_code = e_category) e_category,
+		ROW_NUMBER()
+		OVER(ORDER BY
+		e_num DESC) AS
+		RNUM
+		FROM
+		ebook_tbl
+		WHERE 1=1
+		and e_category=
+		'e' AND
+		e_status
+		='regapproval'
+		<include refid="ebooksearch"></include>
+		) no
+
+		WHERE RNUM BETWEEN #{rowStart} AND #{rowEnd}
+		ORDER BY e_num desc
+
+
+	</select>
+
+	<!-- 단편소설 카테고리 정렬 -->
+	<select id="shotStory"
+		resultType="com.ebookmarket.client.domain.Ebook"
+		parameterType="com.ebookmarket.common.domain.SearchCriteria">
+
+		SELECT e_num,
+		e_title,
+		e_reg_date,
+		e_writer,
+		e_price,
+		e_rating,
+		e_rating_cnt,
+		e_category
+
+		FROM (
+		SELECT e_num,
+		e_title,
+		e_reg_date,
+		e_writer,
+		e_price,
+		e_rating,
+		e_rating_cnt,
+		(select category_name from
+		category where
+		category_code = e_category) e_category,
+		ROW_NUMBER()
+		OVER(ORDER BY
+		e_num DESC) AS
+		RNUM
+		FROM
+		ebook_tbl
+		WHERE 1=1
+		and e_category=
+		'n' AND
+		e_status
+		='regapproval'
+		<include refid="ebooksearch"></include>
+		) no
+
+		WHERE RNUM BETWEEN #{rowStart} AND #{rowEnd}
+		ORDER BY e_num desc
+
+
+	</select>
+
+
+
+	<!-- 게시물 리스트 출력 -->
+	<select id="uploadList"
+		resultType="com.ebookmarket.client.domain.Ebook"
+		parameterType="com.ebookmarket.common.domain.SearchCriteria">
+
+		select
+		e_num,
+		e_coverImage_url,
+		e_title,
+		e_writer,
+		e_reg_date,
+		e_sell_cnt,
+		e_refund_cnt,
+		e_price,
+		e_status
+
+		from(
+		SELECT
+		e_num,
+		e_coverImage_url,
+		e_title,
+		e_writer,
+		e_reg_date,
+		e_sell_cnt,
+		e_refund_cnt,
+		e_price,
+		e_status,
+
+		ROW_NUMBER()
+		OVER(ORDER BY e_num DESC)AS RNUM
+		FROM ebook_tbl
+		WHERE 1=1
+		and s_num =
+		#{s_num} and e_status != 'delapproval'
+
+		<include refid="search"></include>
+		) no
+
+		where
+		RNUM BETWEEN #{rowStart} AND #{rowEnd}
+		order by e_num DESC
+
+	</select>
+
+	<!-- 상품 상세 조회 -->
+	<select id="read"
+		resultType="com.ebookmarket.client.domain.Ebook">
+
+		select *
+
+		from ebook_tbl
+
+		where e_num = #{e_num}
+
+	</select>
+
+	<!-- 조회수 증가 -->
+	<update id="view_cnt">
+		update ebook_tbl
+		set e_view_cnt = e_view_cnt + 1
+		where
+		e_num = #{e_num}
+	</update>
+
+	<!-- 상품 삭제 처리 -->
+	<delete id="delete">
+
+		update ebook_tbl
+
+		set e_status = 'delapply'
+
+		where e_num
+		= #{e_num}
+
+	</delete>
+
+	<!-- 원본 이미지 표시 -->
+	<select id="getCover" resultType="String">
+
+		select e_coverimage_url
+		from
+		ebook_tbl
+		where e_num = #{e_num}
+
+	</select>
+
+	<!-- 미리보기 이미지 표시 -->
+	<select id="getPreview" resultType="String">
+
+		select e_thumbnail_url
+		from
+		ebook_tbl
+		where e_num = #{e_num}
+
+	</select>
+
+	<!-- 게시물 카운트 -->
+	<select id="listCount" resultType="int"
+		parameterType="com.ebookmarket.common.domain.SearchCriteria">
+		SELECT COUNT(e_num)
+		FROM ebook_tbl
+		WHERE 1=1 and e_status ='regapproval'
+		<include refid="search"></include>
+		AND e_num > 0
+	</select>
+
+	<sql id="ebooksearch">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">AND e_TITLE LIKE '%' || #{keyword} || '%' and e_status
+				='regapproval'
+			</if>
+			<if test="searchType == 'w'.toString()">AND e_writer LIKE '%' || #{keyword} || '%' and e_status
+				='regapproval'
+			</if>
+			<if test="searchType == 'en'.toString()">AND e_num LIKE '%' || #{keyword} || '%' and e_status
+				='regapproval'
+			</if>
+			<if test="searchType == 'tw'.toString()">AND (e_TITLE LIKE '%' || #{keyword} || '%') or (e_writer
+				LIKE '%' || #{keyword} || '%') and e_status ='regapproval'</if>
+			<if test="searchType == 'tcw'.toString()">AND (e_TITLE LIKE '%' || #{keyword} || '%') or (e_writer
+				LIKE '%' || #{keyword} || '%') and e_status ='regapproval'</if>
+		</if>
+	</sql>
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">AND e_TITLE LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'w'.toString()">AND e_writer LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'en'.toString()">AND e_num LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'tw'.toString()">AND (e_TITLE LIKE '%' || #{keyword} || '%') or (e_writer
+				LIKE '%' || #{keyword} || '%')</if>
+		</if>
+	</sql>
+
+
+</mapper>

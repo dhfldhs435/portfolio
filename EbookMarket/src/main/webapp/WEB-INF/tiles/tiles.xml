@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+
+	<!-- 메인 페이지 레이아웃 정의 -->
+	<definition name="main-template"
+		template="/WEB-INF/tiles/layouts/main_template.jsp">
+		<put-attribute name="header"
+			value="/WEB-INF/tiles/components/main/header.jsp" />
+		<put-attribute name="side"
+			value="/WEB-INF/tiles/components/main/side.jsp" />
+		<put-attribute name="main"
+			value="/WEB-INF/tiles/components/main/main.jsp" />
+		<put-attribute name="footer"
+			value="/WEB-INF/tiles/components/main/footer.jsp" />
+	</definition>
+
+	<!-- 서브페이지 레이아웃 정의 -->
+	<definition name="common-template"
+		template="/WEB-INF/tiles/layouts/common_template.jsp">
+		<put-attribute name="header"
+			value="/WEB-INF/tiles/components/common/commonheader.jsp" />
+		<put-attribute name="main"
+			value="/WEB-INF/tiles/components/common/commonmain.jsp" />
+		<put-attribute name="footer"
+			value="/WEB-INF/tiles/components/common/commonfooter.jsp" />
+	</definition>
+
+	<definition name="views/*" extends="main-template">
+		<put-attribute name="main"
+			value="/WEB-INF/views/home.jsp" />
+	</definition>
+
+	<!-- 일반회원 관리 페이지에 대한 레이아웃 템플릿 구성요소 정의 -->
+	<definition name="member/*" extends="main-template">
+		<put-attribute name="main"
+			value="/WEB-INF/views/client/member/{1}.jsp" />
+	</definition>
+
+
+
+	<!-- 로그인 페이지에 대한 레이아웃 템플릿 구성요소 정의 -->
+	<definition name="auth/*" extends="main-template">
+		<put-attribute name="main"
+			value="/WEB-INF/views/client/auth/{1}.jsp" />
+	</definition>
+
+	<!-- 판매자 회원 관리 페이지에 대한 레이아웃 템플릿 구성 요소를 정의한다. -->
+	<definition name="seller/*" extends="main-template">
+		<put-attribute name="main"
+			value="/WEB-INF/views/client/seller/{1}.jsp" />
+	</definition>
+
+	<!-- 게시물 페이지에 대한 레이아웃 템플릿 구성 요소를 정의한다. -->
+	<definition name="ebook/*" extends="main-template">
+		<put-attribute name="main"
+			value="/WEB-INF/views/client/ebook/{1}.jsp" />
+	</definition>
+
+	<!-- 다운로드 페이지에 대한 레이아웃 템플릿 구성 요소를 정의한다. -->
+	<definition name="mypage/*" extends="main-template">
+		<put-attribute name="main"
+			value="/WEB-INF/views/client/member/mypage/{1}.jsp" />
+	</definition>
+
+	<!-- 구매 페이지에 대한 레이아웃 템플릿 구성요소 정의 -->
+	<definition name="buyEbook/*" extends="main-template">
+		<put-attribute name="main"
+			value="/WEB-INF/views/client/buyEbook/{1}.jsp" />
+	</definition>
+
+	<!-- 다운로드 페이지에 대한 레이아웃 템플릿 구성 요소를 정의한다. -->
+	<definition name="sellerMypage/*" extends="main-template">
+		<put-attribute name="main"
+			value="/WEB-INF/views/client/seller/sellerMypage/{1}.jsp" />
+	</definition>
+
+	<!-- 회사 소개에 대한 레이아웃 템플릿 구성 요소를 정의한다. -->
+	<definition name="company/*" extends="main-template">
+		<put-attribute name="main"
+			value="/WEB-INF/views/company/{1}.jsp" />
+	</definition>
+
+	<!-- 자주 묻는 질문에 대한 레이아웃 템플릿 구성 요소를 정의한다. -->
+	<definition name="faqboard/*" extends="main-template">
+		<put-attribute name="main"
+			value="/WEB-INF/views/faqboard/{1}.jsp" />
+	</definition>
+
+	<!-- 일반회원 문의게시판에 대한 레이아웃 템플릿 구성 요소를 정의한다. -->
+	<definition name="memberBoard/*" extends="main-template">
+		<put-attribute name="main"
+			value="/WEB-INF/views/board/{1}.jsp" />
+	</definition>
+
+	<!-- 일반회원 문의게시판에 대한 레이아웃 템플릿 구성 요소를 정의한다. -->
+	<definition name="sellerBoard/*" extends="main-template">
+		<put-attribute name="main"
+			value="/WEB-INF/views/board/{1}.jsp" />
+	</definition>
+
+	<!-- 관리자* 창작물 리스트 페이지에 대한 레이아웃 템플릿을 정의한다. -->
+	<definition name="admin/creation/*" extends="main-template">
+
+		<put-attribute name="main"
+			value="/WEB-INF/views/admin/creation/{1}.jsp"></put-attribute>
+	</definition>
+
+	<!-- 관리자* 관리 통계 페이지에 대한 레이아웃 템플릿 구성 요소를 정의한다. -->
+	<definition name="admin/sales/*" extends="main-template">
+
+		<put-attribute name="main"
+			value="/WEB-INF/views/admin/sales/{1}.jsp" />
+	</definition>
+
+	<!-- 관리자* 환불 관리 페이지에 대한 레이아웃 템플릿 구성 요소를 정의한다. -->
+	<definition name="admin/refund/*" extends="main-template">
+
+		<put-attribute name="main"
+			value="/WEB-INF/views/admin/refund/{1}.jsp" />
+	</definition>
+
+	<!-- 관리자* 판매자회원 가입현황에 대한 레이아웃 템플릿 구성 요소를 정의한다. -->
+	<definition name="admin/adminSeller/*"
+		extends="main-template">
+
+		<put-attribute name="main"
+			value="/WEB-INF/views/admin/seller/{1}.jsp" />
+	</definition>
+
+	<!-- 관리자* 회원 관리에 대한 레이아웃 템플릿 구성 요소를 정의한다. -->
+	<definition name="admin/user/*" extends="main-template">
+
+		<put-attribute name="main"
+			value="/WEB-INF/views/admin/user/{1}.jsp" />
+	</definition>
+
+	<!-- 관리자* 공지사항 페이지에 대한 레이아웃 템플릿 구성 요소를 정의한다. -->
+	<definition name="admin/notice/*" extends="main-template">
+
+		<put-attribute name="main"
+			value="/WEB-INF/views/admin/notice/{1}.jsp" />
+	</definition>
+
+	<!-- 관리자* 공지사항 페이지에 대한 레이아웃 템플릿 구성 요소를 정의한다. -->
+	<definition name="admin/category/*" extends="main-template">
+
+		<put-attribute name="main"
+			value="/WEB-INF/views/admin/category/{1}.jsp" />
+	</definition>
+
+	<!-- 회원 공지사항에 대한 레이아웃 템플릿 구성 요소를 정의한다. -->
+	<definition name="notice/*" extends="main-template">
+		<put-attribute name="main"
+			value="/WEB-INF/views/notice/{1}.jsp" />
+	</definition>
+
+</tiles-definitions>

@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ebookmarket.client.mapper.SellerMapper">
+
+	<!-- 사용자 정의 resultMap 요소 정의 -->
+	<resultMap type="com.ebookmarket.client.domain.Seller"
+		id="sellerMap">
+		<result property="s_num" column="s_num" />
+		<result property="s_id" column="s_id" />
+		<result property="s_pw" column="s_pw" />
+		<result property="s_nickname" column="s_nickname" />
+		<result property="s_profile_imgUrl" column="s_profile_imgUrl" />
+		<result property="s_name" column="s_name" />
+		<result property="s_resident_num" column="s_resident_num" />
+		<result property="s_email" column="s_email" />
+		<result property="s_phone" column="s_phone" />
+		<result property="s_seller_agree" column="s_seller_agree" />
+		<result property="s_content_agree" column="s_content_agree" />
+		<result property="s_privaty_agree" column="s_privaty_agree" />
+		<result property="s_address" column="s_address" />
+		<result property="s_bank_name" column="s_bank_name" />
+		<result property="s_account_num" column="s_account_num" />
+		<result property="s_ah_name" column="s_ah_name" />
+		<result property="s_answer" column="s_answer" />
+		<result property="s_join_date" column="s_join_date" />
+		<result property="s_grade" column="s_grade" />
+		<result property="s_certificate_detail"
+			column="s_certificate_detail" />
+		<result property="s_certificate_dataUrl"
+			column="s_certificate_dataUrl" />
+		<result property="s_career_detail" column="s_career_detail" />
+		<result property="s_career_dataUrl" column="s_career_dataUrl" />
+		<collection property="authList" resultMap="authMap">
+		</collection>
+	</resultMap>
+
+	<resultMap type="com.ebookmarket.client.domain.SellerAuth"
+		id="authMap">
+		<result property="s_num" column="s_num" />
+		<result property="auth" column="auth" />
+	</resultMap>
+
+	<!-- 사용자 아이디로 회원 정보 조회 -->
+	<select id="readByUserId" resultMap="sellerMap"
+		parameterType="String">
+		SELECT
+		sel.s_num,
+		sel.s_id,
+		s_pw,
+		s_nickname,
+		s_profile_imgUrl,
+		s_name,
+		s_resident_num,
+		s_email,
+		s_phone,
+		s_seller_agree,
+		s_content_agree,
+		s_privaty_agree,
+		s_address,
+		s_bank_name,
+		s_account_num,
+		s_ah_name,
+		s_answer,
+		s_certificate_detail,
+		s_certificate_dataUrl,
+		s_career_detail,
+		s_career_dataUrl,
+		s_grade,
+		s_join_date,
+		auth
+
+		FROM
+		seller_tbl
+		sel LEFT OUTER JOIN
+		seller_auth auth ON
+		sel.s_num = auth.s_num
+
+		WHERE
+		sel.s_id = #{id}
+	</select>
+
+	<!-- 사용자 아이디로 회원 정보 조회 -->
+	<select id="readByUserNum" resultMap="sellerMap"
+		parameterType="Integer">
+		SELECT
+		sel.s_num,
+		sel.s_id,
+		s_pw,
+		s_nickname,
+		s_profile_imgUrl,
+		s_name,
+		s_resident_num,
+		s_email,
+		s_phone,
+		s_seller_agree,
+		s_content_agree,
+		s_privaty_agree,
+		s_address,
+		s_bank_name,
+		s_account_num,
+		s_ah_name,
+		s_answer,
+		s_certificate_detail,
+		s_certificate_dataUrl,
+		s_career_detail,
+		s_career_dataUrl,
+		s_grade,
+		s_join_date,
+		auth
+
+		FROM
+		seller_tbl
+		sel LEFT OUTER JOIN
+		seller_auth auth ON
+		sel.s_num = auth.s_num
+
+		WHERE
+		sel.s_num = #{s_num}
+	</select>
+
+	<!-- 사용자 이메일로 회원 정보 조회 -->
+	<select id="readByUserEmail" resultMap="sellerMap"
+		parameterType="String">
+		SELECT
+		sel.s_num,
+		s_id,
+		s_pw,
+		s_nickname,
+		s_profile_imgUrl,
+		s_name,
+		s_resident_num,
+		sel.s_email,
+		s_phone,
+		s_seller_agree,
+		s_content_agree,
+		s_privaty_agree,
+		s_address,
+		s_bank_name,
+		s_account_num,
+		s_ah_name,
+		s_answer
+		s_certificate_detail,
+		s_certificate_dataUrl,
+		s_career_detail,
+		s_career_dataUrl,
+		auth
+
+		FROM
+		seller_tbl
+		sel LEFT OUTER JOIN
+		seller_auth auth
+		ON
+		sel.s_num = auth.s_num
+
+		WHERE
+		sel.s_email = #{email}
+	</select>
+
+	<!-- 사용자 이메일과 아이디 회원 정보 조회 -->
+	<select id="readByUserIE" resultMap="sellerMap"
+		parameterType="String">
+		SELECT
+		sel.s_num,
+		s_id,
+		s_pw,
+		s_nickname,
+		s_profile_imgUrl,
+		s_name,
+		s_resident_num,
+		sel.s_email,
+		s_phone,
+		s_seller_agree,
+		s_content_agree,
+		s_privaty_agree,
+		s_address,
+		s_bank_name,
+		s_account_num,
+		s_ah_name,
+		s_answer
+		s_certificate_detail,
+		s_certificate_dataUrl,
+		s_career_detail,
+		s_career_dataUrl,
+		auth
+
+		FROM
+		seller_tbl
+		sel LEFT OUTER JOIN
+		seller_auth auth
+		ON
+		sel.s_num = auth.s_num
+
+		WHERE
+		sel.s_email = #{email}
+		and
+		sel.s_id = #{id}
+	</select>
+
+	<!-- 등록 처리 -->
+	<insert id="create">
+		insert into seller_tbl
+		(
+		s_num,
+		s_id,
+		s_pw,
+		s_nickname,
+		s_profile_imgUrl,
+		s_name,
+		s_resident_num,
+		s_email,
+		s_phone,
+		s_seller_agree,
+		s_content_agree,
+		s_privaty_agree,
+		s_address,
+		s_bank_name,
+		s_account_num,
+		s_ah_name,
+		s_answer,
+		s_certificate_detail,
+		s_certificate_dataUrl,
+		s_career_detail,
+		s_career_dataUrl
+		)
+		values
+		(
+		seller_seq.nextval,
+		#{s_id},
+		#{s_pw},
+		#{s_nickname},
+		'profile_img_fileName',
+		#{s_name},
+		#{s_resident_num},
+		#{s_email},
+		#{s_phone},
+		'y',
+		'y',
+		'y',
+		#{s_address},
+		#{s_bank_name},
+		#{s_account_num},
+		#{s_ah_name},
+		#{s_answer},
+		#{s_certificate_detail},
+		#{s_certificate_dataUrl},
+		#{s_career_detail},
+		#{s_career_dataUrl}
+		)
+
+	</insert>
+
+	<!-- 권한 생성 -->
+	<insert id="createAuth">
+		insert into seller_auth
+		(
+		s_num,
+		auth
+		)
+		values
+		(
+		seller_seq.currval,
+		#{auth}
+		)
+	</insert>
+
+	<!-- 계정정보 수정 처리 -->
+	<update id="update">
+
+		update seller_tbl
+
+		set
+		s_pw = #{s_pw},
+		s_nickname =
+		#{s_nickname},
+		s_email = #{s_email},
+		s_phone = #{s_phone},
+		s_address =
+		#{s_address},
+		s_bank_name = #{s_bank_name},
+		s_account_num =
+		#{s_account_num},
+		s_ah_name = #{s_ah_name},
+		s_answer = #{s_answer},
+		s_certificate_detail = #{s_certificate_detail},
+		s_certificate_dataUrl =
+		#{s_certificate_dataUrl},
+		s_career_detail = #{s_career_detail},
+		s_career_dataUrl = #{s_career_dataUrl}
+
+		where s_num = #{s_num}
+
+	</update>
+
+	<select id="overlappedID" parameterType="String"
+		resultType="int">
+		select count(s_id)
+		from seller_tbl
+		where s_id = #{id}
+	</select>
+
+	<select id="overlappedNickname" parameterType="String"
+		resultType="int">
+		select count(s_nickname)
+		from seller_tbl
+		where s_nickname =
+		#{nickname}
+	</select>
+
+	<select id="overlappedEmail" parameterType="String"
+		resultType="int">
+		select count(s_email)
+		from seller_tbl
+		where s_email =
+		#{email}
+	</select>
+
+	<update id="replacePw">
+		update seller_tbl
+		set s_pw = #{newEncodedPw}
+		where s_id
+		= #{id}
+	</update>
+	
+	<!-- 게시물 카운트 -->
+	<select id="listCount" resultType="int"
+		parameterType="com.ebookmarket.common.domain.SearchCriteria">
+		SELECT COUNT(e_num)
+		FROM ebook_tbl
+		WHERE 1=1
+		<include refid="search"></include>
+		AND e_num > 0
+	</select>
+	
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">AND e_TITLE LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'w'.toString()">AND e_writer LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'en'.toString()">AND e_num LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'tw'.toString()">AND (e_TITLE LIKE '%' || #{keyword} || '%') or (e_writer
+				LIKE '%' || #{keyword} || '%')</if>
+		</if>
+	</sql>
+
+
+</mapper>

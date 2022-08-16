@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ebookmarket.board.mapper.MemberBoardMapper">
+
+	<!-- 게시글 목록 페이지 -->
+	<select id="memberBoardList"
+		resultType="com.ebookmarket.board.domain.MemberBoard"
+		parameterType="com.ebookmarket.common.domain.SearchCriteria">
+
+		SELECT
+		m_num,
+		mb_num,
+		mb_writer,
+		mb_reg_date,
+		mb_title,
+		mb_content,
+		mb_processing
+
+		FROM(
+		SELECT m_num,
+		mb_num,
+		mb_writer,
+		mb_reg_date,
+		mb_title,
+		mb_content,
+		mb_processing,
+		ROW_NUMBER() OVER(ORDER BY MB_NUM DESC) AS
+		RNUM
+		FROM member_board_tbl
+		WHERE 1=1
+		<include refid="search"></include>
+		)member
+
+		WHERE RNUM BETWEEN #{rowStart} AND #{rowEnd}
+		ORDER BY
+		mb_reg_date DESC
+
+	</select>
+	<!-- 게시글 등록처리 -->
+	<insert id="create">
+		INSERT INTO member_board_tbl
+		(
+		m_num,
+		mb_num,
+		mb_writer,
+		mb_title,
+		mb_content,
+		mb_processing,
+		mb_attachment_url,
+		mb_reg_date
+		)
+		VALUES
+		(
+		#{m_num},
+		member_board_seq.NEXTVAL,
+		#{mb_writer},
+		#{mb_title},
+		#{mb_content},
+		10,
+		#{mb_attachmentFileUrl},
+		sysdate
+		)
+	</insert>
+	<!-- 게시글 상세보기 -->
+	<select id="read"
+		resultType="com.ebookmarket.board.domain.MemberBoard">
+		SELECT
+		m_num,
+		mb_num,
+		mb_writer,
+		mb_title,
+		mb_content,
+		mb_processing,
+		mb_attachment_url,
+		mb_reg_date
+		FROM member_board_tbl
+		WHERE
+		mb_num =
+		#{mb_num}
+	</select>
+
+	<!-- 이미지 미리보기 -->
+	<select id="getPicture" resultType="String">
+		SELECT mb_attachment_Url
+		FROM
+		member_board_tbl
+		WHERE mb_num = #{mb_num}
+	</select>
+
+	<!-- 게시글 수정 처리 -->
+	<update id="update">
+		UPDATE member_board_tbl
+		SET mb_title =#{mb_title},
+		mb_content =#{mb_content},
+		mb_attachment_Url =#{mb_attachmentFileUrl}
+		WHERE mb_num = #{mb_num}
+	</update>
+
+	<!-- 게시글 삭제처리 -->
+	<delete id="delete">
+		DELETE FROM member_board_tbl
+		WHERE mb_num = #{mb_num}
+	</delete>
+
+	<!-- 게시물 카운트 -->
+	<select id="listCount" resultType="int"
+		parameterType="com.ebookmarket.common.domain.SearchCriteria">
+		SELECT COUNT(mb_num)
+		FROM member_board_tbl
+		WHERE 1=1
+		<include refid="search"></include>
+		AND mb_num > 0
+	</select>
+
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">AND mb_TITLE LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'c'.toString()">AND mb_CONTENT LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'mn'.toString()">AND mb_num LIKE '%' || #{keyword} || '%'</if>
+			<if test="searchType == 'tc'.toString()">AND (mb_TITLE LIKE '%' || #{keyword} || '%') or
+				(mb_CONTENT LIKE '%' || #{keyword} || '%')</if>
+		</if>
+	</sql>
+</mapper>
